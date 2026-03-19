@@ -60,7 +60,7 @@ export const YearlyCompareChart: React.FC = () => {
         <p className="text-xs text-slate-500 mt-0.5">막대: 올해 및 과거 실적, 꺾은선: 2026년 목표 (단위: 백만원)</p>
       </div>
       <div className="w-full flex-1 min-h-0 relative">
-        <ResponsiveContainer width="100%" height={260}>
+        <ResponsiveContainer width="100%" height={210}>
           <ComposedChart 
             key={activeYears.join(',')}
             data={chartData} 
