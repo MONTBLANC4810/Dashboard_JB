@@ -92,30 +92,31 @@ export const YearlyCompareChart: React.FC = () => {
                 return 0;
               }}
             />
-            {/* @ts-ignore - Recharts Legend payload typing issue */}
             <Legend 
-              payload={[
-                ...activeYears.map(year => ({
-                  value: `${year}년 실적`,
-                  type: 'rect' as const,
-                  color: colors[year.toString() as keyof typeof colors]
-                })),
-                {
-                  value: '2026년 목표',
-                  type: 'line' as const,
-                  color: colors['Target2026']
-                }
-              ]}
-              wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }} 
+              {...({
+                payload: [
+                  ...activeYears.map(year => ({
+                    value: `${year}년 실적`,
+                    type: 'rect' as const,
+                    color: colors[year.toString() as keyof typeof colors]
+                  })),
+                  {
+                    value: '2026년 목표',
+                    type: 'line' as const,
+                    color: colors['Target2026']
+                  }
+                ],
+                wrapperStyle: { paddingTop: '10px', fontSize: '12px' }
+              } as any)} 
             />
             
             {/* 고정된 순서로 수동 렌더링 (2021 -> 2026) */}
-            <Bar dataKey="2021" name="2021년 실적" fill={colors['2021']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2021)} />
-            <Bar dataKey="2022" name="2022년 실적" fill={colors['2022']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2022)} />
-            <Bar dataKey="2023" name="2023년 실적" fill={colors['2023']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2023)} />
-            <Bar dataKey="2024" name="2024년 실적" fill={colors['2024']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2024)} />
-            <Bar dataKey="2025" name="2025년 실적" fill={colors['2025']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2025)} />
-            <Bar dataKey="2026" name="2026년 실적" fill={colors['2026']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2026)} />
+            <Bar dataKey="2021" name="2021년 실적" fill={colors['2021']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2021)} legendType="none" />
+            <Bar dataKey="2022" name="2022년 실적" fill={colors['2022']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2022)} legendType="none" />
+            <Bar dataKey="2023" name="2023년 실적" fill={colors['2023']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2023)} legendType="none" />
+            <Bar dataKey="2024" name="2024년 실적" fill={colors['2024']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2024)} legendType="none" />
+            <Bar dataKey="2025" name="2025년 실적" fill={colors['2025']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2025)} legendType="none" />
+            <Bar dataKey="2026" name="2026년 실적" fill={colors['2026']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2026)} legendType="none" />
 
             <Line 
               type="monotone" 
@@ -125,6 +126,7 @@ export const YearlyCompareChart: React.FC = () => {
               strokeWidth={2}
               dot={{ r: 3, strokeWidth: 1 }}
               activeDot={{ r: 5 }}
+              legendType="none"
             />
           </ComposedChart>
         </ResponsiveContainer>
