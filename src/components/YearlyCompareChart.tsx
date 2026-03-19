@@ -56,7 +56,7 @@ export const YearlyCompareChart: React.FC = () => {
   return (
     <div className="flex flex-col flex-1 w-full h-full">
       <div className="flex-none px-4 pt-4 mb-3">
-        <h3 className="text-base font-bold text-slate-800">연도별 월 실적 및 2026년 목표</h3>
+        <h3 className="text-base font-bold text-slate-800">연도별 월 실적 및 2026년 목표 (v1.7)</h3>
         <p className="text-xs text-slate-500 mt-0.5">막대: 올해 및 과거 실적, 꺾은선: 2026년 목표 (단위: 백만원)</p>
       </div>
       <div className="w-full flex-1 min-h-0 relative">
@@ -84,18 +84,16 @@ export const YearlyCompareChart: React.FC = () => {
                 return [formatTooltipStr(Number(value)), cleanName];
               }}
               contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '13px' }}
-              // ★ 툴팁 항목 정렬: 2026년 목표 → 2026년 실적 → 2025 → ... → 2021
               itemSorter={(item: any) => {
                 const name = String(item.name || '');
-                if (name.includes('목표')) return -9999; // 목표가 가장 위
-                // 연도 추출하여 내림차순 정렬 (2026 = -2026, 최신이 위)
+                if (name.includes('목표')) return -9999;
                 const yearMatch = name.match(/(\d{4})/);
                 if (yearMatch) return -parseInt(yearMatch[1]);
                 return 0;
               }}
             />
             <Legend wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }} />
-            {/* ★ 2026년 목표를 가장 먼저 (맨 위에) 렌더링 */}
+            
             <Line 
               type="monotone" 
               dataKey="Target2026" 
@@ -105,18 +103,14 @@ export const YearlyCompareChart: React.FC = () => {
               dot={{ r: 3, strokeWidth: 1 }}
               activeDot={{ r: 5 }}
             />
-            {/* ★ 연도별 막대를 정적(Static)으로 정의하여 순서를 완전히 고정 (2021 → 2026) */}
-            {[2021, 2022, 2023, 2024, 2025, 2026].map(year => (
-              <Bar 
-                key={year} 
-                dataKey={year.toString()} 
-                name={`${year}년 실적`} 
-                fill={colors[year.toString() as keyof typeof colors]} 
-                radius={[4, 4, 0, 0]}
-                barSize={12}
-                hide={!activeYears.includes(year)}
-              />
-            ))}
+
+            {/* 고정된 순서로 수동 렌더링 (2021 -> 2026) */}
+            <Bar dataKey="2021" name="2021년 실적" fill={colors['2021']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2021)} />
+            <Bar dataKey="2022" name="2022년 실적" fill={colors['2022']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2022)} />
+            <Bar dataKey="2023" name="2023년 실적" fill={colors['2023']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2023)} />
+            <Bar dataKey="2024" name="2024년 실적" fill={colors['2024']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2024)} />
+            <Bar dataKey="2025" name="2025년 실적" fill={colors['2025']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2025)} />
+            <Bar dataKey="2026" name="2026년 실적" fill={colors['2026']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2026)} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
