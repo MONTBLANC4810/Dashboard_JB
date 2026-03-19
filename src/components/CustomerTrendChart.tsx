@@ -1,0 +1,142 @@
+import React, { useMemo, useState } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useDashboard } from '../context/DashboardContext';
+import { formatKoreanCurrencyCompact, formatKoreanCurrencyTooltip } from '../utils/formatters';
+
+export const CustomerTrendChart: React.FC = () => {
+  const { filteredSales } = useDashboard();
+  const [topLimit, setTopLimit] = useState(10); // 10, 20, 30
+
+  const chartData = useMemo(() => {
+    const dataMap: Record<string, any> = {};
+
+    filteredSales.forEach(r => {
+      const timeKey = `${r.year}-${String(r.month).padStart(2, '0')}`;
+      if (!dataMap[timeKey]) {
+        dataMap[timeKey] = { time: timeKey, timestamp: r.year * 100 + r.month };
+      }
+      if (!dataMap[timeKey][r.customerName]) {
+        dataMap[timeKey][r.customerName] = 0;
+      }
+      // 마이너스 매출액은 0으로 처리
+      const validSales = Math.max(0, r.salesAmount);
+      dataMap[timeKey][r.customerName] += validSales;
+    });
+
+    return Object.values(dataMap).sort((a, b) => a.timestamp - b.timestamp);
+  }, [filteredSales]);
+
+  const activeCustomers = useMemo(() => {
+    // 렌더링 부하 방지 및 상위 N개 고객 표시
+    const salesMap: Record<string, number> = {};
+    filteredSales.forEach(r => {
+      if (!salesMap[r.customerName]) salesMap[r.customerName] = 0;
+      const validSales = Math.max(0, r.salesAmount);
+      salesMap[r.customerName] += validSales;
+    });
+
+    const sortedCustomers = Object.entries(salesMap)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, topLimit)
+      .map(entry => entry[0]);
+
+    return sortedCustomers;
+  }, [filteredSales, topLimit]);
+
+  // Extracts strictly Quarter-ending months (March, June, September, December)
+  const quarterlyTicks = useMemo(() => {
+    const ticks = chartData
+      .map((d: any) => d.time)
+      .filter(time => {
+        if (!time) return false;
+        const m = time.split('-')[1];
+        return ['03', '06', '09', '12'].includes(m);
+      });
+    return ticks.length > 0 ? ticks : undefined;
+  }, [chartData]);
+
+  if (filteredSales.length === 0) return null;
+
+  const formatYAxis = (tickItem: number) => formatKoreanCurrencyCompact(tickItem);
+  const formatTooltipStr = (value: number) => formatKoreanCurrencyTooltip(value);
+
+  const stringToColor = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+    return '#' + '00000'.substring(0, 6 - c.length) + c;
+  };
+
+  return (
+    <div className="flex flex-col flex-1 min-h-0 w-full h-full">
+      <div className="flex-none mb-2 px-2 pt-2 flex items-center justify-between">
+        <div>
+          <h3 className="text-base font-bold text-slate-800">고객별 매출 추이</h3>
+          <p className="text-xs text-slate-500 mt-0.5">선택한 조건의 상위 고객별 추이 (단위: 백만원)</p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <label className="text-xs font-medium text-slate-600">표시 항목:</label>
+          <select 
+            value={topLimit} 
+            onChange={(e) => setTopLimit(Number(e.target.value))}
+            className="text-xs border border-slate-300 rounded-md py-1 px-2 focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value={10}>상위 10개</option>
+            <option value={20}>상위 20개</option>
+            <option value={30}>상위 30개</option>
+          </select>
+        </div>
+      </div>
+      <div className="w-full flex-1 min-h-0 relative">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={chartData} margin={{ top: 10, right: 15, left: 10, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+            <XAxis 
+              dataKey="time" 
+              tick={{fill: '#64748b', fontSize: 11}} 
+              ticks={quarterlyTicks}
+              interval={0}
+              tickFormatter={(val) => {
+                if (!val) return '';
+                const parts = val.split('-');
+                if (parts.length < 2) return val;
+                return `'${parts[0].substring(2)}.${parts[1]}`;
+              }}
+              axisLine={false} 
+              tickLine={false} 
+            />
+            <YAxis 
+              domain={[0, 'dataMax']}
+              allowDataOverflow={false}
+              ticks={[50000000, 100000000, 150000000, 200000000, 250000000, 300000000, 350000000]}
+              tickFormatter={formatYAxis} 
+              tick={{fill: '#64748b', fontSize: 11}} 
+              axisLine={false} 
+              tickLine={false} 
+              width={50} 
+            />
+            <Tooltip 
+              formatter={(value: any, name: any) => [formatTooltipStr(Number(value)), String(name)]}
+              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '13px' }}
+            />
+            {activeCustomers.length <= 15 && <Legend wrapperStyle={{ paddingTop: '6px', fontSize: '11px', textAlign: 'left' }} align="left" />}
+            {activeCustomers.map((customer) => (
+              <Line 
+                key={customer}
+                type="monotone"
+                dataKey={customer}
+                stroke={stringToColor(customer)}
+                strokeWidth={2}
+                dot={{ r: 2, strokeWidth: 1 }}
+                activeDot={{ r: 5 }}
+                connectNulls
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+};
