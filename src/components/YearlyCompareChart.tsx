@@ -56,7 +56,7 @@ export const YearlyCompareChart: React.FC = () => {
   return (
     <div className="flex flex-col flex-1 w-full h-full">
       <div className="flex-none px-4 pt-4 mb-3">
-        <h3 className="text-base font-bold text-slate-800">연도별 월 실적 및 2026년 목표 (v1.7)</h3>
+        <h3 className="text-base font-bold text-slate-800">연도별 월 실적 및 2026년 목표</h3>
         <p className="text-xs text-slate-500 mt-0.5">막대: 올해 및 과거 실적, 꺾은선: 2026년 목표 (단위: 백만원)</p>
       </div>
       <div className="w-full flex-1 min-h-0 relative">
