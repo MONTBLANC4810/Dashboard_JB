@@ -92,22 +92,21 @@ export const YearlyCompareChart: React.FC = () => {
                 return 0;
               }}
             />
+            {/* @ts-ignore - Recharts allows manual payload, but types may omit it */}
             <Legend 
-              {...({
-                payload: [
-                  ...activeYears.map(year => ({
-                    value: `${year}년 실적`,
-                    type: 'rect' as const,
-                    color: colors[year.toString() as keyof typeof colors]
-                  })),
-                  {
-                    value: '2026년 목표',
-                    type: 'line' as const,
-                    color: colors['Target2026']
-                  }
-                ],
-                wrapperStyle: { paddingTop: '10px', fontSize: '12px' }
-              } as any)} 
+              payload={[
+                ...activeYears.map(year => ({
+                  value: `${year}년 실적`,
+                  type: 'rect' as const,
+                  color: colors[year.toString() as keyof typeof colors]
+                })),
+                {
+                  value: '2026년 목표',
+                  type: 'line' as const,
+                  color: colors['Target2026']
+                }
+              ]}
+              wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }} 
             />
             
             {/* 고정된 순서로 수동 렌더링 (2021 -> 2026) */}
