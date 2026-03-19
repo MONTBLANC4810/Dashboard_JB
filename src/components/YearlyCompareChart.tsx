@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart } from 'recharts';
+import { Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ComposedChart } from 'recharts';
 import { useDashboard } from '../context/DashboardContext';
 import { formatKoreanCurrencyCompact, formatKoreanCurrencyTooltip } from '../utils/formatters';
 
@@ -60,7 +60,7 @@ export const YearlyCompareChart: React.FC = () => {
         <p className="text-xs text-slate-500 mt-0.5">막대: 올해 및 과거 실적, 꺾은선: 2026년 목표 (단위: 백만원)</p>
       </div>
       <div className="w-full flex-1 min-h-0 relative">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height={260}>
           <ComposedChart 
             key={activeYears.join(',')}
             data={chartData} 
@@ -92,31 +92,14 @@ export const YearlyCompareChart: React.FC = () => {
                 return 0;
               }}
             />
-            {/* @ts-ignore - Recharts allows manual payload, but types may omit it */}
-            <Legend 
-              payload={[
-                ...activeYears.map(year => ({
-                  value: `${year}년 실적`,
-                  type: 'rect' as const,
-                  color: colors[year.toString() as keyof typeof colors]
-                })),
-                {
-                  value: '2026년 목표',
-                  type: 'line' as const,
-                  color: colors['Target2026']
-                }
-              ]}
-              wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }} 
-            />
             
             {/* 고정된 순서로 수동 렌더링 (2021 -> 2026) */}
-            <Bar dataKey="2021" name="2021년 실적" fill={colors['2021']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2021)} legendType="none" />
-            <Bar dataKey="2022" name="2022년 실적" fill={colors['2022']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2022)} legendType="none" />
-            <Bar dataKey="2023" name="2023년 실적" fill={colors['2023']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2023)} legendType="none" />
-            <Bar dataKey="2024" name="2024년 실적" fill={colors['2024']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2024)} legendType="none" />
-            <Bar dataKey="2025" name="2025년 실적" fill={colors['2025']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2025)} legendType="none" />
-            <Bar dataKey="2026" name="2026년 실적" fill={colors['2026']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2026)} legendType="none" />
-
+            <Bar dataKey="2021" name="2021년 실적" fill={colors['2021']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2021)} />
+            <Bar dataKey="2022" name="2022년 실적" fill={colors['2022']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2022)} />
+            <Bar dataKey="2023" name="2023년 실적" fill={colors['2023']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2023)} />
+            <Bar dataKey="2024" name="2024년 실적" fill={colors['2024']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2024)} />
+            <Bar dataKey="2025" name="2025년 실적" fill={colors['2025']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2025)} />
+            <Bar dataKey="2026" name="2026년 실적" fill={colors['2026']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2026)} />
             <Line 
               type="monotone" 
               dataKey="Target2026" 
@@ -125,10 +108,26 @@ export const YearlyCompareChart: React.FC = () => {
               strokeWidth={2}
               dot={{ r: 3, strokeWidth: 1 }}
               activeDot={{ r: 5 }}
-              legendType="none"
             />
           </ComposedChart>
         </ResponsiveContainer>
+        
+        {/* Custom Legend (Directly below the chart) */}
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-1 py-1 px-4">
+          {activeYears.map(year => (
+            <div key={year} className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: colors[year.toString() as keyof typeof colors] }} />
+              <span className="text-[11px] font-medium text-slate-500 whitespace-nowrap">{year}년 실적</span>
+            </div>
+          ))}
+          <div className="flex items-center gap-1.5">
+            <div className="flex items-center justify-center">
+              <div className="w-3.5 h-[2px]" style={{ backgroundColor: colors['Target2026'] }} />
+              <div className="w-1.5 h-1.5 rounded-full -ml-[10px]" style={{ border: `1.5px solid ${colors['Target2026']}`, backgroundColor: '#fff' }} />
+            </div>
+            <span className="text-[11px] font-medium text-slate-500 whitespace-nowrap">2026년 목표</span>
+          </div>
+        </div>
       </div>
     </div>
   );
