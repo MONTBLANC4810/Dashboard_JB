@@ -43,12 +43,18 @@ export const CustomerTrendChart: React.FC = () => {
     return sortedCustomers;
   }, [filteredSales, topLimit]);
 
-  // Extracts strictly Quarter-ending months (March, June, September, December)
+  // Extracts Quarter-ending months AND the very first data point for context
   const quarterlyTicks = useMemo(() => {
+    if (chartData.length === 0) return undefined;
+    
+    const firstTime = chartData[0].time;
     const ticks = chartData
       .map((d: any) => d.time)
       .filter(time => {
         if (!time) return false;
+        // 항상 첫 번째 데이터 포인트 포함
+        if (time === firstTime) return true;
+        
         const m = time.split('-')[1];
         return ['03', '06', '09', '12'].includes(m);
       });
