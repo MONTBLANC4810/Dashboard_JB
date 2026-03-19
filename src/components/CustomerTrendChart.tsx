@@ -61,11 +61,11 @@ export const CustomerTrendChart: React.FC = () => {
         const m = time.split('-')[1];
         if (!['03', '06', '09', '12'].includes(m)) return false;
         
-        // 시작점이나 끝점과 너무 가까운(2개월 이내) 분기 레이블은 겹침 방지를 위해 생략
+        // 시작점이나 끝점과 너무 가까운 분기 레이블은 겹침 방지를 위해 생략
         const firstDist = index;
         const lastDist = (chartData.length - 1) - index;
         
-        return firstDist > 2 && lastDist > 2;
+        return firstDist > 1 && lastDist > 2;
       });
     return ticks.length > 0 ? ticks : undefined;
   }, [chartData]);
