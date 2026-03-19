@@ -43,17 +43,19 @@ export const CustomerTrendChart: React.FC = () => {
     return sortedCustomers;
   }, [filteredSales, topLimit]);
 
-  // Extracts Quarter-ending months AND the very first data point for context
+  // Extracts Quarter-ending months AND the very first/last data points for context
   const quarterlyTicks = useMemo(() => {
     if (chartData.length === 0) return undefined;
     
     const firstTime = chartData[0].time;
+    const lastTime = chartData[chartData.length - 1].time;
+    
     const ticks = chartData
       .map((d: any) => d.time)
       .filter(time => {
         if (!time) return false;
-        // 항상 첫 번째 데이터 포인트 포함
-        if (time === firstTime) return true;
+        // 항상 첫 번째와 마지막 데이터 포인트 포함
+        if (time === firstTime || time === lastTime) return true;
         
         const m = time.split('-')[1];
         return ['03', '06', '09', '12'].includes(m);
@@ -110,7 +112,9 @@ export const CustomerTrendChart: React.FC = () => {
                 if (!val) return '';
                 const parts = val.split('-');
                 if (parts.length < 2) return val;
-                return `'${parts[0].substring(2)}.${parts[1]}`;
+                const year = parts[0].substring(2);
+                const month = parseInt(parts[1], 10);
+                return `'${year}.${month}월`;
               }}
               axisLine={false} 
               tickLine={false} 
