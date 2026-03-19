@@ -99,15 +99,15 @@ export const CustomerTrendChart: React.FC = () => {
       </div>
       <div className="w-full flex-1 min-h-0 relative">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 5 }}>
+          <LineChart data={chartData} margin={{ top: 10, right: 60, left: 10, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
             <XAxis 
               dataKey="time" 
               tick={{fill: '#64748b', fontSize: 11}} 
               ticks={quarterlyTicks}
               interval={0}
-              minTickGap={0}
-              padding={{ left: 30, right: 10 }}
+              minTickGap={-50}
+              padding={{ left: 30, right: 40 }}
               tickFormatter={(val) => {
                 if (!val) return '';
                 const parts = val.split('-');
