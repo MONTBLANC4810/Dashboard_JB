@@ -105,8 +105,8 @@ export const YearlyCompareChart: React.FC = () => {
               dot={{ r: 3, strokeWidth: 1 }}
               activeDot={{ r: 5 }}
             />
-            {/* ★ 연도 오름차순으로 막대 렌더링 (2021→2026, 범례 순서와 동일) */}
-            {activeYears.map(year => (
+            {/* ★ 연도별 막대를 정적(Static)으로 정의하여 순서를 완전히 고정 (2021 → 2026) */}
+            {[2021, 2022, 2023, 2024, 2025, 2026].map(year => (
               <Bar 
                 key={year} 
                 dataKey={year.toString()} 
@@ -114,6 +114,7 @@ export const YearlyCompareChart: React.FC = () => {
                 fill={colors[year.toString() as keyof typeof colors]} 
                 radius={[4, 4, 0, 0]}
                 barSize={12}
+                hide={!activeYears.includes(year)}
               />
             ))}
           </ComposedChart>
