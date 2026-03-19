@@ -61,7 +61,11 @@ export const YearlyCompareChart: React.FC = () => {
       </div>
       <div className="w-full flex-1 min-h-0 relative">
         <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+          <ComposedChart 
+            key={activeYears.join(',')}
+            data={chartData} 
+            margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
+          >
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
             <XAxis dataKey="month" tick={{fill: '#64748b', fontSize: 12}} axisLine={false} tickLine={false} />
             <YAxis 

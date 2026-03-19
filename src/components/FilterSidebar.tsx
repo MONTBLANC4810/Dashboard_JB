@@ -41,7 +41,10 @@ export const FilterSidebar: React.FC = () => {
       if (current.includes(value)) {
         return { ...prev, [key]: current.filter(v => v !== value) };
       } else {
-        return { ...prev, [key]: [...current, value] };
+        const next = [...current, value];
+        // 연도인 경우 오름차순 정렬 유지
+        if (key === 'years') next.sort((a, b) => a - b);
+        return { ...prev, [key]: next };
       }
     });
   };
