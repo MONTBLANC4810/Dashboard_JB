@@ -112,9 +112,7 @@ export const CustomerTrendChart: React.FC = () => {
                 if (!val) return '';
                 const parts = val.split('-');
                 if (parts.length < 2) return val;
-                const year = parts[0].substring(2);
-                const month = parseInt(parts[1], 10);
-                return `'${year}.${month}월`;
+                return `'${parts[0].substring(2)}.${parts[1]}`;
               }}
               axisLine={false} 
               tickLine={false} 
