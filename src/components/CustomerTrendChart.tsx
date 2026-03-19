@@ -52,13 +52,20 @@ export const CustomerTrendChart: React.FC = () => {
     
     const ticks = chartData
       .map((d: any) => d.time)
-      .filter(time => {
+      .filter((time, index) => {
         if (!time) return false;
-        // 항상 첫 번째와 마지막 데이터 포인트 포함
+        // 항상 시작점과 끝점은 포함 (최우선)
         if (time === firstTime || time === lastTime) return true;
         
+        // 기본적으로는 분기(3,6,9,12월)만 표시
         const m = time.split('-')[1];
-        return ['03', '06', '09', '12'].includes(m);
+        if (!['03', '06', '09', '12'].includes(m)) return false;
+        
+        // 시작점이나 끝점과 너무 가까운(2개월 이내) 분기 레이블은 겹침 방지를 위해 생략
+        const firstDist = index;
+        const lastDist = (chartData.length - 1) - index;
+        
+        return firstDist > 2 && lastDist > 2;
       });
     return ticks.length > 0 ? ticks : undefined;
   }, [chartData]);
@@ -106,7 +113,7 @@ export const CustomerTrendChart: React.FC = () => {
               tick={{fill: '#64748b', fontSize: 11}} 
               ticks={quarterlyTicks}
               interval={0}
-              minTickGap={-50}
+              minTickGap={10}
               padding={{ left: 30, right: 40 }}
               tickFormatter={(val) => {
                 if (!val) return '';
