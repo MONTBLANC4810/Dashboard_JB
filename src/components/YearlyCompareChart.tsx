@@ -92,7 +92,22 @@ export const YearlyCompareChart: React.FC = () => {
                 return 0;
               }}
             />
-            <Legend wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }} />
+            {/* @ts-ignore - Recharts Legend payload typing issue */}
+            <Legend 
+              payload={[
+                ...activeYears.map(year => ({
+                  value: `${year}년 실적`,
+                  type: 'rect' as const,
+                  color: colors[year.toString() as keyof typeof colors]
+                })),
+                {
+                  value: '2026년 목표',
+                  type: 'line' as const,
+                  color: colors['Target2026']
+                }
+              ]}
+              wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }} 
+            />
             
             {/* 고정된 순서로 수동 렌더링 (2021 -> 2026) */}
             <Bar dataKey="2021" name="2021년 실적" fill={colors['2021']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2021)} />
