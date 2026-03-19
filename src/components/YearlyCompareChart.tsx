@@ -60,7 +60,7 @@ export const YearlyCompareChart: React.FC = () => {
         <p className="text-xs text-slate-500 mt-0.5">막대: 올해 및 과거 실적, 꺾은선: 2026년 목표 (단위: 백만원)</p>
       </div>
       <div className="w-full flex-1 min-h-0 relative">
-        <ResponsiveContainer width="100%" height={210}>
+        <ResponsiveContainer width="100%" height="100%">
           <ComposedChart 
             key={activeYears.join(',')}
             data={chartData} 
@@ -94,19 +94,21 @@ export const YearlyCompareChart: React.FC = () => {
             />
             {/* @ts-ignore - Recharts Legend payload typing issue */}
             <Legend 
-              payload={[
-                ...activeYears.map(year => ({
-                  value: `${year}년 실적`,
-                  type: 'rect' as const,
-                  color: colors[year.toString() as keyof typeof colors]
-                })),
-                {
-                  value: '2026년 목표',
-                  type: 'line' as const,
-                  color: colors['Target2026']
-                }
-              ]}
-              wrapperStyle={{ paddingTop: '10px', fontSize: '12px' }} 
+              {...({
+                payload: [
+                  ...activeYears.map(year => ({
+                    value: `${year}년 실적`,
+                    type: 'rect' as const,
+                    color: colors[year.toString() as keyof typeof colors]
+                  })),
+                  {
+                    value: '2026년 목표',
+                    type: 'line' as const,
+                    color: colors['Target2026']
+                  }
+                ],
+                wrapperStyle: { paddingTop: '10px', fontSize: '12px' }
+              } as any)} 
             />
             
             {/* 고정된 순서로 수동 렌더링 (2021 -> 2026) */}
