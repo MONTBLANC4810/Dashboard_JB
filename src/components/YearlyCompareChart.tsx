@@ -46,9 +46,12 @@ export const YearlyCompareChart: React.FC = () => {
     'Target2026': '#f43f5e',
   };
 
-  const activeYears = [2021, 2022, 2023, 2024, 2025, 2026].filter(y => 
-    filteredSales.some(r => r.year === y)
-  );
+  // ★ 선택된 연도들을 항상 오름차순(2021→2026)으로 정렬하여 막대 순서를 고정
+  const activeYears = useMemo(() => {
+    return [2021, 2022, 2023, 2024, 2025, 2026]
+      .filter(y => filteredSales.some(r => r.year === y))
+      .sort((a, b) => a - b);
+  }, [filteredSales]);
 
   return (
     <div className="flex flex-col flex-1 w-full h-full">
