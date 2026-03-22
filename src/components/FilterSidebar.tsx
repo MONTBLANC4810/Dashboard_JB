@@ -46,7 +46,12 @@ export const FilterSidebar: React.FC = () => {
       departments: Array.from(depart).sort(),
       budgetTypes: Array.from(budgets).sort(),
       customers: Array.from(custs).sort(),
-      memberStatuses: Array.from(members).sort(),
+      memberStatuses: Array.from(members).sort((a, b: any) => {
+        const order = ['대기업', '중소기업', '소기업', '단체', '비회원'];
+        const indexA = order.indexOf(a);
+        const indexB = order.indexOf(b);
+        return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
+      }),
     };
   }, [salesData]);
 
