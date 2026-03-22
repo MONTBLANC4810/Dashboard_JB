@@ -15,15 +15,25 @@ export const CustomerTrendChart: React.FC = () => {
       if (!dataMap[timeKey]) {
         dataMap[timeKey] = { time: timeKey, timestamp: r.year * 100 + r.month };
       }
-      if (!dataMap[timeKey][r.customerName]) {
+      if (dataMap[timeKey][r.customerName] === undefined) {
         dataMap[timeKey][r.customerName] = 0;
       }
-      // 마이너스 매출액은 0으로 처리
-      const validSales = Math.max(0, r.salesAmount);
-      dataMap[timeKey][r.customerName] += validSales;
+      // 양수/음수 모두 더해서 실제 총계를 계산
+      dataMap[timeKey][r.customerName] += r.salesAmount;
     });
 
-    return Object.values(dataMap).sort((a, b) => a.timestamp - b.timestamp);
+    // 월별 최종 합산액이 마이너스인 경우 그래프에서 표시하지 않음 (null 처리)
+    Object.values(dataMap).forEach((monthData: any) => {
+      Object.keys(monthData).forEach(key => {
+        if (key !== 'time' && key !== 'timestamp' && typeof monthData[key] === 'number') {
+          if (monthData[key] < 0) {
+            monthData[key] = null;
+          }
+        }
+      });
+    });
+
+    return Object.values(dataMap).sort((a, b: any) => a.timestamp - b.timestamp);
   }, [filteredSales]);
 
   const activeCustomers = useMemo(() => {
@@ -31,8 +41,8 @@ export const CustomerTrendChart: React.FC = () => {
     const salesMap: Record<string, number> = {};
     filteredSales.forEach(r => {
       if (!salesMap[r.customerName]) salesMap[r.customerName] = 0;
-      const validSales = Math.max(0, r.salesAmount);
-      salesMap[r.customerName] += validSales;
+      // 총계 기준 상위 고객 추출을 위해 여전히 전체 합산 반영
+      salesMap[r.customerName] += r.salesAmount;
     });
 
     const sortedCustomers = Object.entries(salesMap)
