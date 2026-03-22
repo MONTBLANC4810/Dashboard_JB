@@ -24,6 +24,7 @@ export const initialFilters: FilterState = {
   ksCert: null,
   isoCert: null,
   memberStatuses: [],
+  showTarget2026: true,
 };
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);

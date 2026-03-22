@@ -78,7 +78,7 @@ export const FilterSidebar: React.FC = () => {
 
   const clearFilters = () => {
     setFilters({
-      years: [], months: [], departments: [], budgetTypes: [], customers: [], ksCert: null, isoCert: null, memberStatuses: []
+      years: [], months: [], departments: [], budgetTypes: [], customers: [], ksCert: null, isoCert: null, memberStatuses: [], showTarget2026: true
     });
     setCustomerSearch('');
   };
@@ -141,7 +141,7 @@ export const FilterSidebar: React.FC = () => {
                   onChange={() => toggleFilter(filterKey, item)}
                   className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-colors"
                 />
-                <span className="truncate" title={String(item)}>{item}{filterKey === 'months' ? '월' : filterKey === 'years' ? '년' : ''}</span>
+                <span className="truncate" title={String(item)}>{item}{filterKey === 'months' ? '월' : filterKey === 'years' ? '년 실적' : ''}</span>
               </label>
             );
           })}
@@ -174,6 +174,23 @@ export const FilterSidebar: React.FC = () => {
       </div>
 
       <div className="p-4 overflow-y-auto flex-1 bg-slate-50/50" ref={scrollContainerRef}>
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3 ml-1 pr-1">
+            <h4 className="font-semibold text-slate-700 text-sm">목표 데이터</h4>
+          </div>
+          <div className="space-y-1.5 pr-2">
+            <label className="flex items-center space-x-2 text-sm text-slate-600 hover:text-slate-900 cursor-pointer p-1 rounded hover:bg-slate-100 transition-colors">
+              <input
+                type="checkbox"
+                checked={filters.showTarget2026}
+                onChange={(e) => setFilters(prev => ({ ...prev, showTarget2026: e.target.checked }))}
+                className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-colors"
+              />
+              <span className="truncate">2026년 목표 표시</span>
+            </label>
+          </div>
+        </div>
+
         {renderCheckboxGroup("연도", uniqueValues.years, "years")}
         {renderCheckboxGroup("월", uniqueValues.months, "months")}
         {renderCheckboxGroup("사업부서명 (이름)", uniqueValues.departments, "departments")}

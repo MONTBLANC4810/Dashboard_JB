@@ -28,4 +28,5 @@ export interface FilterState {
   ksCert: boolean | null;
   isoCert: boolean | null;
   memberStatuses: string[];
+  showTarget2026: boolean;
 }

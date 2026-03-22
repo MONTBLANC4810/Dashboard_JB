@@ -4,7 +4,7 @@ import { useDashboard } from '../context/DashboardContext';
 import { formatKoreanCurrencyCompact, formatKoreanCurrencyTooltip } from '../utils/formatters';
 
 export const YearlyCompareChart: React.FC = () => {
-  const { filteredSales, targetData } = useDashboard();
+  const { filteredSales, targetData, filters } = useDashboard();
 
   const chartData = useMemo(() => {
     const dataByMonth: Record<number, any> = {};
@@ -99,11 +99,11 @@ export const YearlyCompareChart: React.FC = () => {
                     type: 'rect' as const,
                     color: colors[year.toString() as keyof typeof colors]
                   })),
-                  {
+                  ...(filters.showTarget2026 ? [{
                     value: '2026년 목표',
                     type: 'line' as const,
                     color: colors['Target2026']
-                  }
+                  }] : [])
                 ],
                 wrapperStyle: { paddingTop: '10px', fontSize: '12px' }
               } as any)} 
@@ -117,15 +117,17 @@ export const YearlyCompareChart: React.FC = () => {
             <Bar dataKey="2025" name="2025년 실적" fill={colors['2025']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2025)} />
             <Bar dataKey="2026" name="2026년 실적" fill={colors['2026']} radius={[4, 4, 0, 0]} barSize={12} hide={!activeYears.includes(2026)} />
 
-            <Line 
-              type="monotone" 
-              dataKey="Target2026" 
-              name="2026년 목표" 
-              stroke={colors['Target2026']} 
-              strokeWidth={2}
-              dot={{ r: 3, strokeWidth: 1 }}
-              activeDot={{ r: 5 }}
-            />
+            {filters.showTarget2026 && (
+              <Line 
+                type="monotone" 
+                dataKey="Target2026" 
+                name="2026년 목표" 
+                stroke={colors['Target2026']} 
+                strokeWidth={2}
+                dot={{ r: 3, strokeWidth: 1 }}
+                activeDot={{ r: 5 }}
+              />
+            )}
           </ComposedChart>
         </ResponsiveContainer>
       </div>
