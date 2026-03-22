@@ -108,7 +108,6 @@ export const CumulativeGauge: React.FC = () => {
     return cumulativeTarget > 0 ? (cumulativeSales / cumulativeTarget) * 100 : 0;
   }, [filteredSales, targetData]);
 
-  if (filteredSales.length === 0) return null;
   return <BarGauge titleLine1="2026년" titleLine2="누적 달성률" value={metrics} color="#4f46e5" />;
 };
 
@@ -129,6 +128,5 @@ export const AnnualGauge: React.FC = () => {
     return totalTarget > 0 ? (cumulativeSales / totalTarget) * 100 : 0;
   }, [filteredSales, targetData]);
 
-  if (filteredSales.length === 0) return null;
   return <BarGauge titleLine1="2026년" titleLine2="연간 진도율" value={metrics} color="#0ea5e9" />;
 };

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import type { FilterState } from '../types';
 import { useDashboard } from '../context/DashboardContext';
 import { Filter, X, Search, CheckSquare, Square } from 'lucide-react';
@@ -6,6 +6,21 @@ import { Filter, X, Search, CheckSquare, Square } from 'lucide-react';
 export const FilterSidebar: React.FC = () => {
   const { salesData, filters, setFilters } = useDashboard();
   const [customerSearch, setCustomerSearch] = useState('');
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // 사용자가 검색어를 입력할 때마다 스크롤을 맨 아래로 부드럽게 이동
+    if (customerSearch && scrollContainerRef.current) {
+      setTimeout(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTo({
+            top: scrollContainerRef.current.scrollHeight,
+            behavior: 'smooth'
+          });
+        }
+      }, 50);
+    }
+  }, [customerSearch]);
 
   // Extract unique values for filters
   const uniqueValues = useMemo(() => {
@@ -74,7 +89,7 @@ export const FilterSidebar: React.FC = () => {
     return acc;
   }, 0);
 
-  const CheckboxGroup = ({ title, items, filterKey, searchable = false }: { title: string, items: any[], filterKey: keyof FilterState, searchable?: boolean }) => {
+  const renderCheckboxGroup = (title: string, items: any[], filterKey: keyof FilterState, searchable: boolean = false) => {
     if (items.length === 0) return null;
     
     // Determine displayed items (filtered by search if applicable)
@@ -158,11 +173,11 @@ export const FilterSidebar: React.FC = () => {
         )}
       </div>
 
-      <div className="p-4 overflow-y-auto flex-1 bg-slate-50/50">
-        <CheckboxGroup title="연도" items={uniqueValues.years} filterKey="years" />
-        <CheckboxGroup title="월" items={uniqueValues.months} filterKey="months" />
-        <CheckboxGroup title="사업부서명 (이름)" items={uniqueValues.departments} filterKey="departments" />
-        <CheckboxGroup title="예산 (목)" items={uniqueValues.budgetTypes} filterKey="budgetTypes" />
+      <div className="p-4 overflow-y-auto flex-1 bg-slate-50/50" ref={scrollContainerRef}>
+        {renderCheckboxGroup("연도", uniqueValues.years, "years")}
+        {renderCheckboxGroup("월", uniqueValues.months, "months")}
+        {renderCheckboxGroup("사업부서명 (이름)", uniqueValues.departments, "departments")}
+        {renderCheckboxGroup("예산 (목)", uniqueValues.budgetTypes, "budgetTypes")}
         
         <div className="mb-6">
           <div className="flex items-center justify-between mb-3 ml-1 pr-1">
@@ -215,8 +230,8 @@ export const FilterSidebar: React.FC = () => {
           </div>
         </div>
 
-        <CheckboxGroup title="회원 상태" items={uniqueValues.memberStatuses} filterKey="memberStatuses" />
-        <CheckboxGroup title="고객명" items={uniqueValues.customers} filterKey="customers" searchable={true} />
+        {renderCheckboxGroup("회원 상태", uniqueValues.memberStatuses, "memberStatuses")}
+        {renderCheckboxGroup("고객명", uniqueValues.customers, "customers", true)}
       </div>
     </div>
   );

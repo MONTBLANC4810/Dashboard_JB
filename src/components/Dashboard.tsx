@@ -5,7 +5,6 @@ import { FilterSidebar } from './FilterSidebar';
 import { CumulativeGauge, AnnualGauge } from './KpiGauges';
 import { YearlyCompareChart } from './YearlyCompareChart';
 import { CustomerTrendChart } from './CustomerTrendChart';
-import { SearchX, RotateCcw } from 'lucide-react';
 
 
 // ──────────────────────────────────────────────────────────────────
@@ -32,7 +31,7 @@ const WidgetWrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 export const Dashboard: React.FC = () => {
-  const { isInitialLoad, salesData, filteredSales, resetFilters } = useDashboard();
+  const { isInitialLoad, salesData } = useDashboard();
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden font-sans">
@@ -52,26 +51,6 @@ export const Dashboard: React.FC = () => {
         {isInitialLoad || salesData.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-50">
             <DataUploader />
-          </div>
-        ) : filteredSales.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-50 text-center">
-            <div className="bg-white p-10 rounded-2xl shadow-sm border border-slate-200 flex flex-col items-center max-w-md">
-              <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-                <SearchX className="w-8 h-8 text-slate-300" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-800 mb-2">검색 결과가 없습니다</h3>
-              <p className="text-slate-500 mb-6 text-sm">
-                선택하신 필터 조건에 해당하는 데이터가 없습니다.<br />
-                다른 조건을 선택하거나 필터를 초기화해 주세요.
-              </p>
-              <button
-                onClick={resetFilters}
-                className="flex items-center justify-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold transition-all shadow-md hover:shadow-lg active:scale-95"
-              >
-                <RotateCcw className="w-4 h-4" />
-                <span>필터 초기화</span>
-              </button>
-            </div>
           </div>
         ) : (
           /* ★ CSS Grid: flex-1로 남은 공간 전부 차지, overflow-y-auto로 확대 시 스크롤 지원 */

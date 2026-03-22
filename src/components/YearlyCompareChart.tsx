@@ -35,8 +35,6 @@ export const YearlyCompareChart: React.FC = () => {
     return Object.values(dataByMonth);
   }, [filteredSales, targetData]);
 
-  if (filteredSales.length === 0) return null;
-
   const formatYAxis = (tickItem: number) => formatKoreanCurrencyCompact(tickItem);
   const formatTooltipStr = (value: number) => formatKoreanCurrencyTooltip(value);
 

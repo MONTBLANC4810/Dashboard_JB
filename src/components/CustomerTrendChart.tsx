@@ -70,8 +70,6 @@ export const CustomerTrendChart: React.FC = () => {
     return ticks.length > 0 ? ticks : undefined;
   }, [chartData]);
 
-  if (filteredSales.length === 0) return null;
-
   const formatYAxis = (tickItem: number) => formatKoreanCurrencyCompact(tickItem);
   const formatTooltipStr = (value: number) => formatKoreanCurrencyTooltip(value);
 
@@ -125,9 +123,8 @@ export const CustomerTrendChart: React.FC = () => {
               tickLine={false} 
             />
             <YAxis 
-              domain={[0, 'dataMax']}
+              domain={[0, 'auto']}
               allowDataOverflow={false}
-              ticks={[50000000, 100000000, 150000000, 200000000, 250000000, 300000000, 350000000]}
               tickFormatter={formatYAxis} 
               tick={{fill: '#64748b', fontSize: 11}} 
               axisLine={false} 
