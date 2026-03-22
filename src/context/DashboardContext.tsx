@@ -12,9 +12,10 @@ interface DashboardContextType {
   isLoading: boolean;
   setIsLoading: (loading: boolean) => void;
   isInitialLoad: boolean;
+  resetFilters: () => void;
 }
 
-const initialFilters: FilterState = {
+export const initialFilters: FilterState = {
   years: [],
   months: [],
   departments: [],
@@ -54,9 +55,13 @@ export const DashboardProvider: React.FC<{ children: ReactNode }> = ({ children 
     });
   }, [salesData, filters]);
 
+  const resetFilters = () => {
+    setFilters(initialFilters);
+  };
+
   return (
     <DashboardContext.Provider value={{
-      salesData, targetData, filteredSales, filters, setFilters, updateData, isLoading, setIsLoading, isInitialLoad
+      salesData, targetData, filteredSales, filters, setFilters, updateData, isLoading, setIsLoading, isInitialLoad, resetFilters
     }}>
       {children}
     </DashboardContext.Provider>
