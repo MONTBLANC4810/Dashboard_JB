@@ -47,8 +47,8 @@ export const YearlyCompareChart: React.FC = () => {
   const formatYAxis = (tickItem: number) => formatKoreanCurrencyCompact(tickItem);
 
   const colors = {
-    '2021': '#818cf8', '2022': '#818cf8', '2023': '#818cf8',
-    '2024': '#818cf8', '2025': '#4f46e5', '2026': '#e11d48',
+    '2021': '#94a3b8', '2022': '#94a3b8', '2023': '#94a3b8',
+    '2024': '#94a3b8', '2025': '#4f46e5', '2026': '#e11d48',
     'Target2026': '#10b981',
   };
 
@@ -130,7 +130,7 @@ export const YearlyCompareChart: React.FC = () => {
                                 <span className="ml-auto">{Number(entry.value).toLocaleString()}</span>
                               </div>
                               {cumulativeText && (
-                                <div className="text-slate-500 font-medium tracking-tight w-[110px] text-right">
+                                <div className="text-slate-500 font-medium tracking-tight whitespace-nowrap text-right ml-2">
                                   {cumulativeText}
                                 </div>
                               )}

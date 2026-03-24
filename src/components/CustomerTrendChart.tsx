@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useDashboard } from '../context/DashboardContext';
 import { formatKoreanCurrencyCompact } from '../utils/formatters';
 
@@ -193,6 +193,7 @@ export const CustomerTrendChart: React.FC = () => {
               }}
               cursor={{ fill: 'rgba(241, 245, 249, 0.4)' }}
             />
+            {activeCustomers.length <= 15 && <Legend wrapperStyle={{ paddingTop: '6px', fontSize: '11px', textAlign: 'left' }} align="left" />}
             {activeCustomers.map((customer) => (
               <Line 
                 key={customer}
