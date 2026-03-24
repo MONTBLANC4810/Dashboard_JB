@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useDashboard } from '../context/DashboardContext';
-import { formatKoreanCurrencyCompact, formatKoreanCurrencyTooltip } from '../utils/formatters';
+import { formatKoreanCurrencyCompact } from '../utils/formatters';
 
 export const CustomerTrendChart: React.FC = () => {
   const { filteredSales } = useDashboard();
@@ -180,8 +180,9 @@ export const CustomerTrendChart: React.FC = () => {
                               <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: stringToColor(c) }}></span>
                               <span className="truncate max-w-[120px]">{c}</span>
                             </div>
-                            <div className="font-semibold text-slate-800 font-mono tracking-tighter">
-                              {formatKoreanCurrencyTooltip(val)}
+                            <div className="font-semibold text-slate-800 tracking-tight flex justify-between items-center w-[110px]">
+                              <span className="text-slate-400 font-medium mr-2">₩</span>
+                              <span>{val.toLocaleString()}</span>
                             </div>
                           </div>
                         );
@@ -192,7 +193,6 @@ export const CustomerTrendChart: React.FC = () => {
               }}
               cursor={{ fill: 'rgba(241, 245, 249, 0.4)' }}
             />
-            {activeCustomers.length <= 15 && <Legend wrapperStyle={{ paddingTop: '6px', fontSize: '11px', textAlign: 'left' }} align="left" />}
             {activeCustomers.map((customer) => (
               <Line 
                 key={customer}
@@ -244,8 +244,11 @@ export const CustomerTrendChart: React.FC = () => {
                             <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: stringToColor(c) }}></span>
                             {c}
                           </td>
-                          <td className="px-4 py-2 text-slate-800 text-right font-semibold font-mono tracking-tighter">
-                            {formatKoreanCurrencyTooltip(val)}
+                          <td className="px-4 py-2">
+                            <div className="flex justify-between items-center w-[110px] ml-auto text-slate-800 font-semibold tracking-tight">
+                              <span className="text-slate-400 font-medium mr-2">₩</span>
+                              <span>{val == null ? '-' : val.toLocaleString()}</span>
+                            </div>
                           </td>
                         </tr>
                       );
