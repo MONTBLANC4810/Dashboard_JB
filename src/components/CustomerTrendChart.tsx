@@ -160,8 +160,38 @@ export const CustomerTrendChart: React.FC = () => {
               width={50} 
             />
             <Tooltip 
-              formatter={(value: any, name: any) => [formatTooltipStr(Number(value)), String(name)]}
-              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '13px' }}
+              content={(props) => {
+                if (!props.active || !props.payload || props.payload.length === 0) return null;
+                const data = props.payload[0].payload;
+                const topCustomers = Object.keys(data)
+                  .filter(k => k.endsWith('_real') && data[k] > 0)
+                  .map(k => k.replace('_real', ''))
+                  .sort((a, b) => data[`${b}_real`] - data[`${a}_real`])
+                  .slice(0, topLimit);
+
+                return (
+                  <div className="bg-white p-3 border border-slate-200 shadow-lg rounded-lg text-xs z-50">
+                    <p className="font-bold text-slate-700 mb-2">{props.label}</p>
+                    <div className="space-y-1.5 mt-2">
+                      {topCustomers.map(c => {
+                        const val = data[`${c}_real`];
+                        return (
+                          <div key={c} className="flex justify-between items-center gap-6">
+                            <div className="flex items-center text-slate-600 font-medium">
+                              <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: stringToColor(c) }}></span>
+                              <span className="truncate max-w-[120px]">{c}</span>
+                            </div>
+                            <div className="font-semibold text-slate-800 tabular-nums">
+                              {formatKoreanCurrencyTooltip(val)}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              }}
+              cursor={{ fill: 'rgba(241, 245, 249, 0.4)' }}
             />
             {activeCustomers.length <= 15 && <Legend wrapperStyle={{ paddingTop: '6px', fontSize: '11px', textAlign: 'left' }} align="left" />}
             {activeCustomers.map((customer) => (
@@ -215,7 +245,7 @@ export const CustomerTrendChart: React.FC = () => {
                             <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: stringToColor(c) }}></span>
                             {c}
                           </td>
-                          <td className="px-4 py-2 text-slate-700 text-right font-medium">
+                          <td className="px-4 py-2 text-slate-800 text-right font-semibold tabular-nums tracking-tight">
                             {formatKoreanCurrencyTooltip(val)}
                           </td>
                         </tr>
