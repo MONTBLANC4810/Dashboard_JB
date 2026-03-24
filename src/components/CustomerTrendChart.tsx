@@ -20,6 +20,11 @@ export const CustomerTrendChart: React.FC = () => {
       if (dataMap[timeKey][r.customerName] === undefined) {
         dataMap[timeKey][r.customerName] = 0;
         dataMap[timeKey][`${r.customerName}_real`] = 0;
+        dataMap[timeKey][`${r.customerName}_maxSale`] = r;
+      } else {
+        if (r.salesAmount > dataMap[timeKey][`${r.customerName}_maxSale`].salesAmount) {
+          dataMap[timeKey][`${r.customerName}_maxSale`] = r;
+        }
       }
       // 양수/음수 모두 더해서 실제 총계를 계산 (표, 차트 보존용 각각 저장)
       dataMap[timeKey][r.customerName] += r.salesAmount;
@@ -30,7 +35,7 @@ export const CustomerTrendChart: React.FC = () => {
     Object.values(dataMap).forEach((monthData: any) => {
       Object.keys(monthData).forEach(key => {
         // _real 키가 아닌 그래프용 데이터만 음수를 null로 치환
-        if (key !== 'time' && key !== 'timestamp' && !key.endsWith('_real') && typeof monthData[key] === 'number') {
+        if (key !== 'time' && key !== 'timestamp' && !key.endsWith('_real') && !key.endsWith('_maxSale') && typeof monthData[key] === 'number') {
           if (monthData[key] < 0) {
             monthData[key] = null;
           }
@@ -223,11 +228,13 @@ export const CustomerTrendChart: React.FC = () => {
               </button>
             </div>
             <div className="overflow-y-auto flex-1 p-0 custom-scrollbar">
-              <table className="w-full text-xs text-left">
-                <thead className="bg-slate-50 sticky top-0 shadow-sm z-10">
+              <table className="w-full text-xs text-left table-fixed">
+                <thead className="bg-slate-50 sticky top-0 shadow-sm z-10 w-full">
                   <tr>
-                    <th className="px-4 py-2 font-semibold text-slate-600 border-b border-slate-200">고객명</th>
-                    <th className="px-4 py-2 font-semibold text-slate-600 text-right border-b border-slate-200">순매출액</th>
+                    <th className="px-4 py-2 font-semibold text-slate-600 border-b border-slate-200 w-[26%]">고객명</th>
+                    <th className="px-4 py-2 font-semibold text-slate-600 border-b border-slate-200 w-[20%]">부서(이름)</th>
+                    <th className="px-4 py-2 font-semibold text-slate-600 border-b border-slate-200 w-[30%]">대표 자재내역</th>
+                    <th className="px-4 py-2 font-semibold text-slate-600 text-right border-b border-slate-200 w-[24%]">순매출액</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -238,11 +245,18 @@ export const CustomerTrendChart: React.FC = () => {
                     .slice(0, topLimit)
                     .map((c) => {
                       const val = selectedPoint[`${c}_real`];
+                      const maxRec = selectedPoint[`${c}_maxSale`];
                       return (
                         <tr key={c} className="hover:bg-slate-50 transition-colors">
-                          <td className="px-4 py-2 text-slate-700 font-medium flex items-center">
-                            <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: stringToColor(c) }}></span>
-                            {c}
+                          <td className="px-4 py-2 text-slate-700 font-medium truncate flex items-center" title={c}>
+                            <span className="inline-block w-2 h-2 rounded-full mr-2 shrink-0" style={{ backgroundColor: stringToColor(c) }}></span>
+                            <span className="truncate">{c}</span>
+                          </td>
+                          <td className="px-4 py-2 text-slate-500 truncate" title={maxRec?.department}>
+                            {maxRec?.department || '-'}
+                          </td>
+                          <td className="px-4 py-2 text-slate-500 truncate" title={maxRec?.materialDetails}>
+                            {maxRec?.materialDetails || '-'}
                           </td>
                           <td className="px-4 py-2">
                             <div className="w-[110px] ml-auto text-slate-800 font-semibold tracking-tight text-right">

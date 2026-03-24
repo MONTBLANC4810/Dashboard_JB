@@ -5,6 +5,7 @@ export interface SalesRecord {
   dateStr: string;
   department: string; // 이름
   budgetType: string; // 예산(목)
+  materialDetails?: string; // 자재내역
   customerName: string; // 고객명
   customerCode: string; // 고객
   salesAmount: number; // 매출 계

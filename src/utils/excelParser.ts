@@ -28,6 +28,7 @@ export const parseExcelData = async (file: File): Promise<{ sales: SalesRecord[]
               dateStr: dateVal,
               department: String(row['이름'] || '').trim(),
               budgetType: String(row['예산(목)'] || '').trim(),
+              materialDetails: String(row['자재내역'] || '').trim(),
               customerName: String(row['고객명'] || '').trim(),
               customerCode: String(row['고객'] || '').trim(),
               salesAmount: Number(row['매출 계']) || 0,
