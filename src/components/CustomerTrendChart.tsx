@@ -113,14 +113,14 @@ export const CustomerTrendChart: React.FC = () => {
           </select>
         </div>
       </div>
-      <div className="w-full flex-1 min-h-0 relative">
+      <div className="w-full flex-1 min-h-0 relative cursor-pointer group">
+        <div className="absolute inset-0 z-0 hidden group-hover:block pointer-events-none bg-slate-50/10 transition-colors"></div>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData} margin={{ top: 10, right: 60, left: 10, bottom: 5 }} onClick={(e: any) => {
             if (e && e.activePayload && e.activePayload.length > 0) {
                setSelectedPoint(e.activePayload[0].payload);
-            } else {
-               setSelectedPoint(null);
             }
+            // 빈 공간 클릭 시 닫히는 로직 제거 (실수 방지)
           }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
             <XAxis 
@@ -161,7 +161,12 @@ export const CustomerTrendChart: React.FC = () => {
                 stroke={stringToColor(customer)}
                 strokeWidth={2}
                 dot={{ r: 2, strokeWidth: 1 }}
-                activeDot={{ r: 5 }}
+                activeDot={{ 
+                  r: 5, 
+                  onClick: (_event: any, payload: any) => {
+                    if (payload && payload.payload) setSelectedPoint(payload.payload);
+                  }
+                }}
                 connectNulls
               />
             ))}
