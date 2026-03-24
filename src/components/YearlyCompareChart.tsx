@@ -47,7 +47,7 @@ export const YearlyCompareChart: React.FC = () => {
   const formatYAxis = (tickItem: number) => formatKoreanCurrencyCompact(tickItem);
 
   const colors = {
-    '2021': '#94a3b8', '2022': '#94a3b8', '2023': '#94a3b8',
+    '2021': '#cbd5e1', '2022': '#cbd5e1', '2023': '#cbd5e1',
     '2024': '#94a3b8', '2025': '#4f46e5', '2026': '#e11d48',
     'Target2026': '#10b981',
   };
@@ -124,22 +124,18 @@ export const YearlyCompareChart: React.FC = () => {
                               <span className="inline-block w-2 h-2 rounded-full mr-1.5" style={{ backgroundColor: entry.color }}></span>
                               <span className="truncate w-[65px]">{cleanName}</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                              {/* 당월 실적 영역 (좌우 양끝 정렬) */}
-                              <div className="font-semibold text-slate-800 tracking-tight flex justify-between items-center w-[90px]">
-                                <span className="text-slate-400 font-medium mr-1">₩</span>
-                                <span className="ml-auto">{Number(entry.value).toLocaleString()}</span>
+                            <div className="flex items-center gap-1">
+                              {/* 당월 실적 영역 (자연스러운 우측 정렬) */}
+                              <div className="font-semibold text-slate-800 tracking-tight text-right w-[100px]">
+                                ₩ {Number(entry.value).toLocaleString()}
                               </div>
-                              {/* 누적 실적 영역 (구간을 쪼개서 좌우 폭 완전 고정) */}
-                              <div className="w-[145px] flex items-center h-full">
+                              {/* 누적 실적 영역 (고정폭 컨테이너 내부 우측 정렬 로직) */}
+                              <div className="w-[155px] flex items-center justify-end h-full">
                                 {cumulativeNum != null && (
-                                  <div className="flex items-center text-slate-500 font-medium tracking-tight w-full whitespace-nowrap">
-                                    <span className="w-[36px] text-left">(누적:</span>
-                                    <div className="flex justify-between items-center w-[100px]">
-                                      <span className="text-slate-400 font-normal ml-0.5">₩</span>
-                                      <span className="ml-auto">{cumulativeNum.toLocaleString()}</span>
-                                    </div>
-                                    <span className="w-[8px] text-right">)</span>
+                                  <div className="flex items-center text-slate-500 font-medium tracking-tight whitespace-nowrap">
+                                    <span className="mr-1">(누적:</span>
+                                    <span className="w-[95px] text-right">₩ {cumulativeNum.toLocaleString()}</span>
+                                    <span className="ml-0.5">)</span>
                                   </div>
                                 )}
                               </div>

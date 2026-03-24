@@ -180,9 +180,8 @@ export const CustomerTrendChart: React.FC = () => {
                               <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: stringToColor(c) }}></span>
                               <span className="truncate max-w-[120px]">{c}</span>
                             </div>
-                            <div className="font-semibold text-slate-800 tracking-tight flex justify-between items-center w-[110px]">
-                              <span className="text-slate-400 font-medium mr-2">₩</span>
-                              <span>{val.toLocaleString()}</span>
+                            <div className="font-semibold text-slate-800 tracking-tight text-right w-[105px]">
+                              ₩ {val.toLocaleString()}
                             </div>
                           </div>
                         );
@@ -246,9 +245,8 @@ export const CustomerTrendChart: React.FC = () => {
                             {c}
                           </td>
                           <td className="px-4 py-2">
-                            <div className="flex justify-between items-center w-[110px] ml-auto text-slate-800 font-semibold tracking-tight">
-                              <span className="text-slate-400 font-medium mr-2">₩</span>
-                              <span>{val == null ? '-' : val.toLocaleString()}</span>
+                            <div className="w-[110px] ml-auto text-slate-800 font-semibold tracking-tight text-right">
+                              ₩ {val == null ? '-' : val.toLocaleString()}
                             </div>
                           </td>
                         </tr>
