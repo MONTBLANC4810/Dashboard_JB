@@ -199,20 +199,22 @@ export const CustomerTrendChart: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {activeCustomers.map((c) => {
-                    const val = selectedPoint[c];
-                    if (val == null) return null;
-                    return (
-                      <tr key={c} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-4 py-2 text-slate-700 font-medium flex items-center">
-                          <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: stringToColor(c) }}></span>
-                          {c}
-                        </td>
-                        <td className="px-4 py-2 text-slate-700 text-right font-medium">
-                          {formatKoreanCurrencyTooltip(val)}
-                        </td>
-                      </tr>
-                    );
+                  {activeCustomers
+                    .filter(c => selectedPoint[c] != null)
+                    .sort((a, b) => Number(selectedPoint[b]) - Number(selectedPoint[a]))
+                    .map((c) => {
+                      const val = selectedPoint[c];
+                      return (
+                        <tr key={c} className="hover:bg-slate-50 transition-colors">
+                          <td className="px-4 py-2 text-slate-700 font-medium flex items-center">
+                            <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: stringToColor(c) }}></span>
+                            {c}
+                          </td>
+                          <td className="px-4 py-2 text-slate-700 text-right font-medium">
+                            {formatKoreanCurrencyTooltip(val)}
+                          </td>
+                        </tr>
+                      );
                   })}
                 </tbody>
               </table>
