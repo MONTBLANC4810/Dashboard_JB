@@ -180,7 +180,7 @@ export const CustomerTrendChart: React.FC = () => {
                               <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: stringToColor(c) }}></span>
                               <span className="truncate max-w-[120px]">{c}</span>
                             </div>
-                            <div className="font-semibold text-slate-800 tabular-nums">
+                            <div className="font-semibold text-slate-800 font-mono tracking-tighter">
                               {formatKoreanCurrencyTooltip(val)}
                             </div>
                           </div>
@@ -244,7 +244,7 @@ export const CustomerTrendChart: React.FC = () => {
                             <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: stringToColor(c) }}></span>
                             {c}
                           </td>
-                          <td className="px-4 py-2 text-slate-800 text-right font-semibold tabular-nums tracking-tight">
+                          <td className="px-4 py-2 text-slate-800 text-right font-semibold font-mono tracking-tighter">
                             {formatKoreanCurrencyTooltip(val)}
                           </td>
                         </tr>
