@@ -86,7 +86,6 @@ export const CustomerTrendChart: React.FC = () => {
   }, [chartData]);
 
   const formatYAxis = (tickItem: number) => formatKoreanCurrencyCompact(tickItem);
-  const formatTooltipStr = (value: number) => formatKoreanCurrencyTooltip(value);
 
   const stringToColor = (str: string) => {
     let hash = 0;
