@@ -202,17 +202,12 @@ export const CustomerTrendChart: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {[...activeCustomers]
-                    .sort((a, b) => {
-                      // 테이블 정렬은 무조건 숨겨지지 않은 실제 데이터 기준 (_real)
-                      const realA = selectedPoint[`${a}_real`];
-                      const realB = selectedPoint[`${b}_real`];
-                      const valA = realA != null ? Number(realA) : -999999999;
-                      const valB = realB != null ? Number(realB) : -999999999;
-                      return valB - valA;
-                    })
+                  {Object.keys(selectedPoint)
+                    .filter(k => k.endsWith('_real') && selectedPoint[k] > 0)
+                    .map(k => k.replace('_real', ''))
+                    .sort((a, b) => selectedPoint[`${b}_real`] - selectedPoint[`${a}_real`])
+                    .slice(0, topLimit)
                     .map((c) => {
-                      // 화면 출력도 실제 수치 기준
                       const val = selectedPoint[`${c}_real`];
                       return (
                         <tr key={c} className="hover:bg-slate-50 transition-colors">
@@ -221,7 +216,7 @@ export const CustomerTrendChart: React.FC = () => {
                             {c}
                           </td>
                           <td className="px-4 py-2 text-slate-700 text-right font-medium">
-                            {val == null ? '-' : formatKoreanCurrencyTooltip(val)}
+                            {formatKoreanCurrencyTooltip(val)}
                           </td>
                         </tr>
                       );
