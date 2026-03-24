@@ -7,6 +7,7 @@ export const CustomerTrendChart: React.FC = () => {
   const { filteredSales } = useDashboard();
   const [topLimit, setTopLimit] = useState(10); // 10, 20, 30
   const [selectedPoint, setSelectedPoint] = useState<any>(null);
+  const [hoveredPoint, setHoveredPoint] = useState<any>(null);
 
   const chartData = useMemo(() => {
     const dataMap: Record<string, any> = {};
@@ -116,12 +117,19 @@ export const CustomerTrendChart: React.FC = () => {
       <div className="w-full flex-1 min-h-0 relative cursor-pointer group">
         <div className="absolute inset-0 z-0 hidden group-hover:block pointer-events-none bg-slate-50/10 transition-colors"></div>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 10, right: 60, left: 10, bottom: 5 }} onClick={(e: any) => {
-            if (e && e.activePayload && e.activePayload.length > 0) {
-               setSelectedPoint(e.activePayload[0].payload);
-            }
-            // 빈 공간 클릭 시 닫히는 로직 제거 (실수 방지)
-          }}>
+          <LineChart data={chartData} margin={{ top: 10, right: 60, left: 10, bottom: 5 }} 
+            onMouseMove={(e: any) => {
+              if (e?.activePayload?.length > 0) setHoveredPoint(e.activePayload[0].payload);
+            }}
+            onMouseLeave={() => setHoveredPoint(null)}
+            onClick={(e: any) => {
+              if (e?.activePayload?.length > 0) {
+                 setSelectedPoint(e.activePayload[0].payload);
+              } else if (hoveredPoint) {
+                 setSelectedPoint(hoveredPoint);
+              }
+            }}
+          >
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
             <XAxis 
               dataKey="time" 
@@ -172,46 +180,46 @@ export const CustomerTrendChart: React.FC = () => {
             ))}
           </LineChart>
         </ResponsiveContainer>
+
+        {/* 선택된 월의 상세 데이터 테이블 (오버레이 모달) */}
+        {selectedPoint && (
+          <div className="absolute inset-1 border border-slate-200 rounded-lg overflow-hidden flex flex-col bg-white shadow-2xl z-20 transition-all duration-300">
+            <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex justify-between items-center">
+              <h4 className="font-semibold text-sm text-slate-700">{selectedPoint.time} 실적 상세</h4>
+              <button onClick={(e) => { e.stopPropagation(); setSelectedPoint(null); }} className="text-xs font-medium text-slate-500 hover:text-red-500 transition-colors px-2 py-1 bg-white border border-slate-200 rounded shadow-sm">
+                닫기 ✕
+              </button>
+            </div>
+            <div className="overflow-y-auto flex-1 p-0 custom-scrollbar">
+              <table className="w-full text-xs text-left">
+                <thead className="bg-slate-50 sticky top-0 shadow-sm z-10">
+                  <tr>
+                    <th className="px-4 py-2 font-semibold text-slate-600 border-b border-slate-200">고객명</th>
+                    <th className="px-4 py-2 font-semibold text-slate-600 text-right border-b border-slate-200">순매출액</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {activeCustomers.map((c) => {
+                    const val = selectedPoint[c];
+                    if (val == null) return null;
+                    return (
+                      <tr key={c} className="hover:bg-slate-50 transition-colors">
+                        <td className="px-4 py-2 text-slate-700 font-medium flex items-center">
+                          <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: stringToColor(c) }}></span>
+                          {c}
+                        </td>
+                        <td className="px-4 py-2 text-slate-700 text-right font-medium">
+                          {formatKoreanCurrencyTooltip(val)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
-      
-      {/* 선택된 월의 상세 데이터 테이블 */}
-      {selectedPoint && (
-        <div className="flex-none mt-4 h-52 border border-slate-200 rounded-lg overflow-hidden flex flex-col bg-white shadow-sm transition-all duration-300">
-          <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex justify-between items-center">
-            <h4 className="font-semibold text-sm text-slate-700">{selectedPoint.time} 실적 상세</h4>
-            <button onClick={() => setSelectedPoint(null)} className="text-xs font-medium text-slate-500 hover:text-red-500 transition-colors">
-              닫기 ✕
-            </button>
-          </div>
-          <div className="overflow-y-auto flex-1 p-0 custom-scrollbar">
-            <table className="w-full text-xs text-left">
-              <thead className="bg-slate-50 sticky top-0 shadow-sm z-10">
-                <tr>
-                  <th className="px-4 py-2 font-semibold text-slate-600 border-b border-slate-200">고객명</th>
-                  <th className="px-4 py-2 font-semibold text-slate-600 text-right border-b border-slate-200">순매출액</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {activeCustomers.map((c) => {
-                  const val = selectedPoint[c];
-                  if (val == null) return null;
-                  return (
-                    <tr key={c} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-4 py-2.5 text-slate-700 font-medium flex items-center">
-                        <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: stringToColor(c) }}></span>
-                        {c}
-                      </td>
-                      <td className="px-4 py-2.5 text-slate-700 text-right font-medium">
-                        {formatKoreanCurrencyTooltip(val)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
