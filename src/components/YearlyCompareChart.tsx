@@ -27,6 +27,15 @@ export const YearlyCompareChart: React.FC = () => {
       }
     });
     
+    // 계산된 월별 데이터를 기반으로 누적(Cumulative) 값 산출
+    let cumSums: Record<string, number> = { '2021': 0, '2022': 0, '2023': 0, '2024': 0, '2025': 0, '2026': 0, 'Target2026': 0 };
+    for (let m = 1; m <= 12; m++) {
+      ['2021', '2022', '2023', '2024', '2025', '2026', 'Target2026'].forEach(key => {
+        cumSums[key] += dataByMonth[m][key] || 0;
+        dataByMonth[m][`${key}_cumulative`] = cumSums[key];
+      });
+    }
+    
     const presentMonths = new Set(filteredSales.map(s => s.month));
     if (presentMonths.size > 0) {
        return Object.values(dataByMonth).filter(d => presentMonths.has(d.rawMonth));
@@ -76,10 +85,24 @@ export const YearlyCompareChart: React.FC = () => {
                width={50} 
             />
             <Tooltip 
-              formatter={(value: any, name: any) => {
+              formatter={(value: any, name: any, props: any) => {
                 const nameStr = String(name);
                 const cleanName = nameStr.replace(/년$/, '');
-                return [formatTooltipStr(Number(value)), cleanName];
+                
+                let cumulativeText = '';
+                // Extract year (e.g., '2026' from '2026년 실적' or 'Target2026')
+                if (nameStr.includes('목표')) {
+                  const cum = props.payload['Target2026_cumulative'];
+                  if (cum) cumulativeText = ` (누적: ${formatTooltipStr(cum)})`;
+                } else {
+                  const yearMatch = nameStr.match(/(\d{4})/);
+                  if (yearMatch) {
+                    const cum = props.payload[`${yearMatch[1]}_cumulative`];
+                    if (cum) cumulativeText = ` (누적: ${formatTooltipStr(cum)})`;
+                  }
+                }
+
+                return [`${formatTooltipStr(Number(value))}${cumulativeText}`, cleanName];
               }}
               contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '13px' }}
               itemSorter={(item: any) => {

@@ -6,6 +6,7 @@ import { formatKoreanCurrencyCompact, formatKoreanCurrencyTooltip } from '../uti
 export const CustomerTrendChart: React.FC = () => {
   const { filteredSales } = useDashboard();
   const [topLimit, setTopLimit] = useState(10); // 10, 20, 30
+  const [selectedPoint, setSelectedPoint] = useState<any>(null);
 
   const chartData = useMemo(() => {
     const dataMap: Record<string, any> = {};
@@ -97,7 +98,7 @@ export const CustomerTrendChart: React.FC = () => {
       <div className="flex-none mb-2 px-2 pt-2 flex items-center justify-between">
         <div>
           <h3 className="text-base font-bold text-slate-800">고객별 매출 추이</h3>
-          <p className="text-xs text-slate-500 mt-0.5">선택한 조건의 상위 고객별 추이 (단위: 백만원)</p>
+          <p className="text-xs text-slate-500 mt-0.5">※ 점이나 선을 클릭하면 아래에 상세 표가 표시됩니다.</p>
         </div>
         <div className="flex items-center space-x-2">
           <label className="text-xs font-medium text-slate-600">표시 항목:</label>
@@ -114,7 +115,13 @@ export const CustomerTrendChart: React.FC = () => {
       </div>
       <div className="w-full flex-1 min-h-0 relative">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData} margin={{ top: 10, right: 60, left: 10, bottom: 5 }}>
+          <LineChart data={chartData} margin={{ top: 10, right: 60, left: 10, bottom: 5 }} onClick={(e: any) => {
+            if (e && e.activePayload && e.activePayload.length > 0) {
+               setSelectedPoint(e.activePayload[0].payload);
+            } else {
+               setSelectedPoint(null);
+            }
+          }}>
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
             <XAxis 
               dataKey="time" 
@@ -161,6 +168,45 @@ export const CustomerTrendChart: React.FC = () => {
           </LineChart>
         </ResponsiveContainer>
       </div>
+      
+      {/* 선택된 월의 상세 데이터 테이블 */}
+      {selectedPoint && (
+        <div className="flex-none mt-4 h-52 border border-slate-200 rounded-lg overflow-hidden flex flex-col bg-white shadow-sm transition-all duration-300">
+          <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex justify-between items-center">
+            <h4 className="font-semibold text-sm text-slate-700">{selectedPoint.time} 실적 상세</h4>
+            <button onClick={() => setSelectedPoint(null)} className="text-xs font-medium text-slate-500 hover:text-red-500 transition-colors">
+              닫기 ✕
+            </button>
+          </div>
+          <div className="overflow-y-auto flex-1 p-0 custom-scrollbar">
+            <table className="w-full text-xs text-left">
+              <thead className="bg-slate-50 sticky top-0 shadow-sm z-10">
+                <tr>
+                  <th className="px-4 py-2 font-semibold text-slate-600 border-b border-slate-200">고객명</th>
+                  <th className="px-4 py-2 font-semibold text-slate-600 text-right border-b border-slate-200">순매출액</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {activeCustomers.map((c) => {
+                  const val = selectedPoint[c];
+                  if (val == null) return null;
+                  return (
+                    <tr key={c} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-4 py-2.5 text-slate-700 font-medium flex items-center">
+                        <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: stringToColor(c) }}></span>
+                        {c}
+                      </td>
+                      <td className="px-4 py-2.5 text-slate-700 text-right font-medium">
+                        {formatKoreanCurrencyTooltip(val)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
