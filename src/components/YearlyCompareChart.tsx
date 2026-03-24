@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ComposedChart } from 'recharts';
 import { useDashboard } from '../context/DashboardContext';
-import { formatKoreanCurrencyCompact, formatKoreanCurrencyTooltip } from '../utils/formatters';
+import { formatKoreanCurrencyCompact } from '../utils/formatters';
 
 export const YearlyCompareChart: React.FC = () => {
   const { filteredSales, targetData, filters } = useDashboard();
@@ -45,11 +45,10 @@ export const YearlyCompareChart: React.FC = () => {
   }, [filteredSales, targetData]);
 
   const formatYAxis = (tickItem: number) => formatKoreanCurrencyCompact(tickItem);
-  const formatTooltipStr = (value: number) => formatKoreanCurrencyTooltip(value);
 
   const colors = {
-    '2021': '#f1f5f9', '2022': '#e2e8f0', '2023': '#cbd5e1',
-    '2024': '#94a3b8', '2025': '#4f46e5', '2026': '#e11d48',
+    '2021': '#cbd5e1', '2022': '#94a3b8', '2023': '#64748b',
+    '2024': '#818cf8', '2025': '#4f46e5', '2026': '#e11d48',
     'Target2026': '#10b981',
   };
 
@@ -85,33 +84,65 @@ export const YearlyCompareChart: React.FC = () => {
                width={50} 
             />
             <Tooltip 
-              formatter={(value: any, name: any, props: any) => {
-                const nameStr = String(name);
-                const cleanName = nameStr.replace(/년$/, '');
+              content={({ active, payload, label }) => {
+                if (!active || !payload || payload.length === 0) return null;
                 
-                let cumulativeText = '';
-                // Extract year (e.g., '2026' from '2026년 실적' or 'Target2026')
-                if (nameStr.includes('목표')) {
-                  const cum = props.payload['Target2026_cumulative'];
-                  if (cum) cumulativeText = ` (누적: ${formatTooltipStr(cum)})`;
-                } else {
-                  const yearMatch = nameStr.match(/(\d{4})/);
-                  if (yearMatch) {
-                    const cum = props.payload[`${yearMatch[1]}_cumulative`];
-                    if (cum) cumulativeText = ` (누적: ${formatTooltipStr(cum)})`;
-                  }
-                }
+                const sortedPayload = [...payload].sort((a: any, b: any) => {
+                  const nameA = String(a.name || '');
+                  const nameB = String(b.name || '');
+                  if (nameA.includes('목표')) return -1;
+                  if (nameB.includes('목표')) return 1;
+                  const matchA = nameA.match(/(\d{4})/);
+                  const matchB = nameB.match(/(\d{4})/);
+                  if (matchA && matchB) return parseInt(matchB[1]) - parseInt(matchA[1]);
+                  return 0;
+                });
 
-                return [`${formatTooltipStr(Number(value))}${cumulativeText}`, cleanName];
+                return (
+                  <div className="bg-white p-3 border border-slate-200 shadow-lg rounded-lg text-xs z-50">
+                    <p className="font-bold text-slate-700 mb-2">{label}</p>
+                    <div className="space-y-1.5 mt-2">
+                      {sortedPayload.map((entry: any) => {
+                        const nameStr = String(entry.name);
+                        const cleanName = nameStr.replace(/년$/, '');
+                        
+                        let cumulativeText = '';
+                        if (nameStr.includes('목표')) {
+                          const cum = entry.payload['Target2026_cumulative'];
+                          if (cum) cumulativeText = `(누적: ₩${cum.toLocaleString()})`;
+                        } else {
+                          const yearMatch = nameStr.match(/(\d{4})/);
+                          if (yearMatch) {
+                            const cum = entry.payload[`${yearMatch[1]}_cumulative`];
+                            if (cum) cumulativeText = `(누적: ₩${cum.toLocaleString()})`;
+                          }
+                        }
+
+                        return (
+                          <div key={entry.dataKey} className="flex justify-between items-center gap-4">
+                            <div className="flex items-center text-slate-700 font-medium tracking-tight">
+                              <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: entry.color }}></span>
+                              <span className="truncate w-[70px]">{cleanName}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="font-semibold text-slate-800 tracking-tight flex justify-between items-center w-[90px]">
+                                <span className="text-slate-400 font-medium mr-1">₩</span>
+                                <span className="ml-auto">{Number(entry.value).toLocaleString()}</span>
+                              </div>
+                              {cumulativeText && (
+                                <div className="text-slate-500 font-medium tracking-tight w-[110px] text-right">
+                                  {cumulativeText}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
               }}
-              contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '13px' }}
-              itemSorter={(item: any) => {
-                const name = String(item.name || '');
-                if (name.includes('목표')) return -9999;
-                const yearMatch = name.match(/(\d{4})/);
-                if (yearMatch) return -parseInt(yearMatch[1]);
-                return 0;
-              }}
+              cursor={{ fill: 'rgba(241, 245, 249, 0.4)' }}
             />
             {/* @ts-ignore - Recharts Legend payload typing issue */}
             <Legend 
