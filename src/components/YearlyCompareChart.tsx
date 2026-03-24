@@ -106,34 +106,43 @@ export const YearlyCompareChart: React.FC = () => {
                         const nameStr = String(entry.name);
                         const cleanName = nameStr.replace(/년$/, '');
                         
-                        let cumulativeText = '';
+                        let cumulativeNum: number | null = null;
                         if (nameStr.includes('목표')) {
                           const cum = entry.payload['Target2026_cumulative'];
-                          if (cum) cumulativeText = `(누적: ₩${cum.toLocaleString()})`;
+                          if (cum != null) cumulativeNum = cum;
                         } else {
                           const yearMatch = nameStr.match(/(\d{4})/);
                           if (yearMatch) {
                             const cum = entry.payload[`${yearMatch[1]}_cumulative`];
-                            if (cum) cumulativeText = `(누적: ₩${cum.toLocaleString()})`;
+                            if (cum != null) cumulativeNum = cum;
                           }
                         }
 
                         return (
-                          <div key={entry.dataKey} className="flex justify-between items-center gap-4">
+                          <div key={entry.dataKey} className="flex justify-between items-center gap-1">
                             <div className="flex items-center text-slate-700 font-medium tracking-tight">
-                              <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ backgroundColor: entry.color }}></span>
-                              <span className="truncate w-[70px]">{cleanName}</span>
+                              <span className="inline-block w-2 h-2 rounded-full mr-1.5" style={{ backgroundColor: entry.color }}></span>
+                              <span className="truncate w-[65px]">{cleanName}</span>
                             </div>
-                            <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2">
+                              {/* 당월 실적 영역 (좌우 양끝 정렬) */}
                               <div className="font-semibold text-slate-800 tracking-tight flex justify-between items-center w-[90px]">
                                 <span className="text-slate-400 font-medium mr-1">₩</span>
                                 <span className="ml-auto">{Number(entry.value).toLocaleString()}</span>
                               </div>
-                              {cumulativeText && (
-                                <div className="text-slate-500 font-medium tracking-tight whitespace-nowrap text-right ml-2">
-                                  {cumulativeText}
-                                </div>
-                              )}
+                              {/* 누적 실적 영역 (구간을 쪼개서 좌우 폭 완전 고정) */}
+                              <div className="w-[145px] flex items-center h-full">
+                                {cumulativeNum != null && (
+                                  <div className="flex items-center text-slate-500 font-medium tracking-tight w-full whitespace-nowrap">
+                                    <span className="w-[36px] text-left">(누적:</span>
+                                    <div className="flex justify-between items-center w-[100px]">
+                                      <span className="text-slate-400 font-normal ml-0.5">₩</span>
+                                      <span className="ml-auto">{cumulativeNum.toLocaleString()}</span>
+                                    </div>
+                                    <span className="w-[8px] text-right">)</span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                         );
