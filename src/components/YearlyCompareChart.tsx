@@ -48,7 +48,7 @@ export const YearlyCompareChart: React.FC = () => {
   const formatTooltipStr = (value: number) => formatKoreanCurrencyTooltip(value);
 
   const colors = {
-    '2021': '#64748b', '2022': '#475569', '2023': '#334155',
+    '2021': '#e2e8f0', '2022': '#cbd5e1', '2023': '#94a3b8',
     '2024': '#6366f1', '2025': '#4f46e5', '2026': '#e11d48',
     'Target2026': '#10b981',
   };

@@ -19,15 +19,18 @@ export const CustomerTrendChart: React.FC = () => {
       }
       if (dataMap[timeKey][r.customerName] === undefined) {
         dataMap[timeKey][r.customerName] = 0;
+        dataMap[timeKey][`${r.customerName}_real`] = 0;
       }
-      // 양수/음수 모두 더해서 실제 총계를 계산
+      // 양수/음수 모두 더해서 실제 총계를 계산 (표, 차트 보존용 각각 저장)
       dataMap[timeKey][r.customerName] += r.salesAmount;
+      dataMap[timeKey][`${r.customerName}_real`] += r.salesAmount;
     });
 
     // 월별 최종 합산액이 마이너스인 경우 그래프에서 표시하지 않음 (null 처리)
     Object.values(dataMap).forEach((monthData: any) => {
       Object.keys(monthData).forEach(key => {
-        if (key !== 'time' && key !== 'timestamp' && typeof monthData[key] === 'number') {
+        // _real 키가 아닌 그래프용 데이터만 음수를 null로 치환
+        if (key !== 'time' && key !== 'timestamp' && !key.endsWith('_real') && typeof monthData[key] === 'number') {
           if (monthData[key] < 0) {
             monthData[key] = null;
           }
@@ -201,12 +204,16 @@ export const CustomerTrendChart: React.FC = () => {
                 <tbody className="divide-y divide-slate-100">
                   {[...activeCustomers]
                     .sort((a, b) => {
-                      const valA = selectedPoint[a] != null ? Number(selectedPoint[a]) : -999999999;
-                      const valB = selectedPoint[b] != null ? Number(selectedPoint[b]) : -999999999;
+                      // 테이블 정렬은 무조건 숨겨지지 않은 실제 데이터 기준 (_real)
+                      const realA = selectedPoint[`${a}_real`];
+                      const realB = selectedPoint[`${b}_real`];
+                      const valA = realA != null ? Number(realA) : -999999999;
+                      const valB = realB != null ? Number(realB) : -999999999;
                       return valB - valA;
                     })
                     .map((c) => {
-                      const val = selectedPoint[c];
+                      // 화면 출력도 실제 수치 기준
+                      const val = selectedPoint[`${c}_real`];
                       return (
                         <tr key={c} className="hover:bg-slate-50 transition-colors">
                           <td className="px-4 py-2 text-slate-700 font-medium flex items-center">
