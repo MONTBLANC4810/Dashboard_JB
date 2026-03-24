@@ -47,7 +47,7 @@ export const YearlyCompareChart: React.FC = () => {
   const formatYAxis = (tickItem: number) => formatKoreanCurrencyCompact(tickItem);
 
   const colors = {
-    '2021': '#cbd5e1', '2022': '#94a3b8', '2023': '#64748b',
+    '2021': '#818cf8', '2022': '#818cf8', '2023': '#818cf8',
     '2024': '#818cf8', '2025': '#4f46e5', '2026': '#e11d48',
     'Target2026': '#10b981',
   };
