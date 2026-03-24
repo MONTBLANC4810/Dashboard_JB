@@ -199,9 +199,12 @@ export const CustomerTrendChart: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {activeCustomers
-                    .filter(c => selectedPoint[c] != null)
-                    .sort((a, b) => Number(selectedPoint[b]) - Number(selectedPoint[a]))
+                  {[...activeCustomers]
+                    .sort((a, b) => {
+                      const valA = selectedPoint[a] != null ? Number(selectedPoint[a]) : -999999999;
+                      const valB = selectedPoint[b] != null ? Number(selectedPoint[b]) : -999999999;
+                      return valB - valA;
+                    })
                     .map((c) => {
                       const val = selectedPoint[c];
                       return (
@@ -211,7 +214,7 @@ export const CustomerTrendChart: React.FC = () => {
                             {c}
                           </td>
                           <td className="px-4 py-2 text-slate-700 text-right font-medium">
-                            {formatKoreanCurrencyTooltip(val)}
+                            {val == null ? '-' : formatKoreanCurrencyTooltip(val)}
                           </td>
                         </tr>
                       );
